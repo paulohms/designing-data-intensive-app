@@ -107,4 +107,37 @@ Usually it is better to use percentiles than mean. Because mean doesn’t tell y
 ## Maintainability
 Over time, many different people will work on the system (engineering and oper‐ations, both maintaining current behavior and adapting the system to new use cases), and they should all be able to work on it productively.
 
-Here..  It is well known that the
+It is well known that the majority of the cost of software is not in its initial development, but in its ongoing maintenance—fixing bugs, keeping its systems operational, investigating failures, adapting it to new platforms, modifying it for new use cases,
+repaying technical debt, and adding new features.
+
+However, we can and should design software in such a way that it will hopefully minimize pain during maintenance, and thus avoid creating legacy software ourselves. To this end, we will pay particular attention to three design principles for software
+systems:
+
+* Operability (Making Life Easy for Operations)
+
+    * Make it easy for operations teams to keep the system running smoothly.
+    * Monitoring the health of the system and quickly restoring service if it goes into a bad state
+    * Keeping tabs on how different systems affect each other, so that a problematic change can be avoided before it causes damage
+    * Preserving the organization’s knowledge about the system, even as individual people come and go
+
+* Simplicity (Managing Complexity)
+
+    * Make it easy for new engineers to understand the system, by removing as much complexity as possible from the system. 
+    * One of the best tools we have for removing accidental complexity is abstraction. A good abstraction can hide a great deal of implementation detail behind a clean, simple-to-understand façade. A good abstraction can also be used for a wide range of different applications. Not only is this reuse more efficient than reimplementing a similar thing multiple times, but it also leads to higher-quality software, as quality improvements in the abstracted component benefit all applications that use it.
+
+
+* Evolvability (Making Change Easy) 
+    * Make it easy for engineers to make changes to the system in the future, adapting it for unanticipated use cases as requirements change. Also known as extensibility, modifiability, or plasticity.
+
+
+## Summary
+
+In this chapter, we have explored some fundamental ways of thinking about data intensive applications. These principles will guide us through the rest of the book, where we dive into deep technical detail.
+
+
+Reliability means making systems work correctly, even when faults occur. Faults can be in hardware (typically random and uncorrelated), software (bugs are typically systematic and hard to deal with), and humans (who inevitably make mistakes from time to time). Fault-tolerance techniques can hide certain types of faults from the end user.
+
+Scalability means having strategies for keeping performance good, even when load increases. In order to discuss scalability, we first need ways of describing load and performance quantitatively. We briefly looked at Twitter’s home timelines as an example of describing load, and response time percentiles as a way of measuring performance. In a scalable system, you can add processing capacity in order to remain reliable under high load.
+
+Maintainability has many facets, but in essence it’s about making life better for the engineering and operations teams who need to work with the system. Good abstractions can help reduce complexity and make the system easier to modify and adapt for new use cases. Good operability means having good visibility into the system’s health, and having effective ways of managing it.
+
