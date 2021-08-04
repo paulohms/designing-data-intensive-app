@@ -219,13 +219,10 @@ In the property graph model, each vertex consists of:
 - A set of outgoing edges
 - A set of incoming edges
 - A collection of properties (key-value pairs)
-  Each edge consists of:
+
+Each edge consists of:
 - A unique identifier
 - The vertex at which the edge starts (the tail vertex)
-- The vertex at which the edge ends (the head vertex)
-- A label to describe the kind of relationship between the two vertices
-- A collection of properties (key-value pairs)
-
 - The vertex at which the edge ends (the head vertex)
 - A label to describe the kind of relationship between the two vertices
 - A collection of properties (key-value pairs)
