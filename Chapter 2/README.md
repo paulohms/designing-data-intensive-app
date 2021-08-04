@@ -164,3 +164,17 @@ The locality advantage only applies if you need large parts of the document at t
 ### Convergence of document and relational databases
 
 Most relational databases nowadays have supported both XML and JSON documents for quite some time. Similarly, document databases are gradually adding support for relational-like query language. It seems that relational and document databases are becoming more similar over time, and that is a good thing: the data models complement each other.
+
+## Query Languages for Data
+
+When the relational model was introduced, it included a new way of querying data: SQL is a *declarative* query language, whereas IMS and CODASYL queried the database using *imperative* code.
+
+An imperative language tells the computer to perform certain operations in a certain order. You can imagine stepping through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.
+
+In a declarative query language, like SQL or relational algebra, you just specify the pattern of the data you want—what conditions the results must meet, and how you want the data to be transformed (e.g., sorted, grouped, and aggregated)—but not how to achieve that goal. It is up to the database system’s query optimizer to decide which indexes and which join methods to use, and in which order to execute various parts of the query.
+
+A declarative query language is attractive because it is typically more concise and easier to work with than an imperative API. But more importantly, it also hides implementation details of the database engine, which makes it possible for the database system to introduce performance improvements without requiring any changes to queries.
+
+The fact that SQL is more limited in functionality gives the database much more room for automatic optimizations.
+
+Finally, imperative code is very hard to parallelize across multiple cores and multiple machines, because it specifies instructions that must be performed in a particular order. Declarative languages have a better chance of getting faster in parallel execution because they specify only the pattern of the results, not the algorithm that is used to determine the results. The database is free to use a parallel implementation of the query language, if appropriate.
