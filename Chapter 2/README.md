@@ -50,7 +50,7 @@ The following figure illustrates how a résumé (a LinkedIn profile) could be ex
 
 - In the traditional SQL model (prior to SQL:1999), the most common normalized representation is to put positions, education, and contact information in separate tables, with a foreign key reference to the users table.
 - Later versions of the SQL standard added support for structured datatypes and XML data; this allowed multi-valued data to be stored within a single row, with support for querying and indexing inside those documents. These features are supported to varying degrees by Oracle, IBM DB2, MS SQL Server, and PostgreSQL [6, 7]. A JSON datatype is also supported by several databases, including IBM DB2, MySQL, and PostgreSQL.
-- A third option is to encode jobs, education, and contact info as a JSON or XML   document, store it on a text column in the database, and let the application interpret its structure and content. In this setup, you typically cannot use the database to query for values inside that encoded column.
+- A third option is to encode jobs, education, and contact info as a JSON or XML document, store it on a text column in the database, and let the application interpret its structure and content. In this setup, you typically cannot use the database to query for values inside that encoded column.
 
 ![](chapter-2-1.png)
 
@@ -93,7 +93,7 @@ The **one-to-many** relationships from the user profile to the user’s position
 
 ## Many-to-One and Many-to-Many Relationships
 
-In the résumé example, *region_id* and *industry_id* are given as IDs, not as plain-text strings "Greater Seattle Area" and "Philanthropy".
+In the résumé example, _region_id_ and _industry_id_ are given as IDs, not as plain-text strings "Greater Seattle Area" and "Philanthropy".
 
 Whether you store an ID or a text string is a question of duplication. When you use an ID, the information that is meaningful to humans (such as the word Philanthropy) is stored in only one place, and everything that refers to it uses an ID (which only has meaning within the database). When you store the text directly, you are duplicating the human-meaningful information in every record that uses it.
 
@@ -147,13 +147,14 @@ It’s not possible to say in general which data model leads to simpler applicat
 
 Most document databases, and the JSON support in relational databases, do not enforce any schema on the data in documents. XML support in relational databases usually comes with optional schema validation. No schema means that arbitrary keys and values can be added to a document, and when reading, clients have no guarantees as to what fields the documents may contain.
 
-Document databases are sometimes called *schemaless*, but that’s misleading, as the code that reads the data usually assumes some kind of structure, there is an implicit schema, but it is not enforced by the database. A more accurate term is *schema-on-read* (the structure of the data is implicit, and only interpreted when the data is read), in contrast with *schema-on-write* (the traditional approach of relational databases, where the schema is explicit and the database ensures all written data conforms to it).
+Document databases are sometimes called _schemaless_, but that’s misleading, as the code that reads the data usually assumes some kind of structure, there is an implicit schema, but it is not enforced by the database. A more accurate term is _schema-on-read_ (the structure of the data is implicit, and only interpreted when the data is read), in contrast with _schema-on-write_ (the traditional approach of relational databases, where the schema is explicit and the database ensures all written data conforms to it).
 
 Schema-on-read is similar to dynamic (runtime) type checking in programming languages, whereas schema-on-write is similar to static (compile-time) type checking.
 
 The schema-on-read approach is advantageous if the items in the collection don’t all have the same structure for some reason for example, because:
-* There are many different types of objects, and it is not practical to put each type of object in its own table.
-* The structure of the data is determined by external systems over which you have no control and which may change at any time.
+
+- There are many different types of objects, and it is not practical to put each type of object in its own table.
+- The structure of the data is determined by external systems over which you have no control and which may change at any time.
 
 ### Data locality for queries
 
@@ -167,7 +168,7 @@ Most relational databases nowadays have supported both XML and JSON documents fo
 
 ## Query Languages for Data
 
-When the relational model was introduced, it included a new way of querying data: SQL is a *declarative* query language, whereas IMS and CODASYL queried the database using *imperative* code.
+When the relational model was introduced, it included a new way of querying data: SQL is a _declarative_ query language, whereas IMS and CODASYL queried the database using _imperative_ code.
 
 An imperative language tells the computer to perform certain operations in a certain order. You can imagine stepping through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.
 
@@ -186,3 +187,293 @@ MapReduce is a programming model for processing large amounts of data in bulk ac
 MapReduce is neither a declarative query language nor a fully imperative query API, but somewhere in between: the logic of the query is expressed with snippets of code, which are called repeatedly by the processing framework. It is based on the map (also known as **collect**) and reduce (also known as **fold** or **inject**) functions that exist in many functional programming languages.
 
 The map and reduce functions are somewhat restricted in what they are allowed to do. They must be pure functions, which means they only use the data that is passed to them as input, they cannot perform additional database queries, and they must not have any side effects. These restrictions allow the database to run the functions anywhere, in any order, and rerun them on failure. However, they are nevertheless powerful: they can parse strings, call library functions, perform calculations, and more.
+
+## Graph-Like Data Models
+
+We saw earlier that many-to-many relationships are an important distinguishing feature between different data models. If your application has mostly one-to-many relationships (tree-structured data) or no relationships between records, the document model is appropriate.
+
+But what if many-to-many relationships are very common in your data? The relational model can handle simple cases of many-to-many relationships, but as the connections within your data become more complex, it becomes more natural to start modeling your data as a graph.
+
+A graph consists of two kinds of objects: vertices (also known as nodes or entities) and edges (also known as relationships or arcs). Many kinds of data can be modeled as a graph. Typical examples include:
+
+_Social graphs_
+Vertices are people, and edges indicate which people know each other.
+
+_The web graph_
+Vertices are web pages, and edges indicate HTML links to other pages.
+
+_Road or rail networks_
+Vertices are junctions, and edges represent the roads or railway lines between them.
+
+In the examples just given, all the vertices in a graph represent the same kind of thing (people, web pages, or road junctions, respectively). However, graphs are not limited to such homogeneous data: an equally powerful use of graphs is to provide a consistent way of storing completely different types of objects in a single datastore.
+
+The following figure shows an example of data modeling with graph. It could be taken from a social network or a genealogical database: it shows two people, Lucy from Idaho and Alain from Beaune, France. They are married and living in London.
+
+![](chapter-2-3.png)
+
+## Property Graphs
+
+In the property graph model, each vertex consists of:
+
+- A unique identifier
+- A set of outgoing edges
+- A set of incoming edges
+- A collection of properties (key-value pairs)
+  Each edge consists of:
+- A unique identifier
+- The vertex at which the edge starts (the tail vertex)
+- The vertex at which the edge ends (the head vertex)
+- A label to describe the kind of relationship between the two vertices
+- A collection of properties (key-value pairs)
+
+- The vertex at which the edge ends (the head vertex)
+- A label to describe the kind of relationship between the two vertices
+- A collection of properties (key-value pairs)
+
+We can think of a graph store as consisting of two relational tables, one for vertices and one for edges, as shown in the following code (this schema uses the PostgreSQL json datatype to store the properties of each vertex or edge).
+
+```sql
+CREATE TABLE vertices (
+  vertex_id integer PRIMARY KEY,
+  properties json
+);
+CREATE TABLE edges (
+  edge_id
+  integer PRIMARY KEY,
+  tail_vertex integer REFERENCES vertices (vertex_id),
+  head_vertex integer REFERENCES vertices (vertex_id),
+  label
+  text,
+  properties json
+);
+CREATE INDEX edges_tails ON edges (tail_vertex);
+CREATE INDEX edges_heads ON edges (head_vertex);
+```
+
+## The Cypher Query Language
+
+Cypher is a declarative query language for property graphs, created for the Neo4j graph database.
+
+The following code shows the Cypher query to insert the lefthand portion of the previous example into a graph database. The rest of the graph can be added similarly and is omitted for readability. Each vertex is given a symbolic name like USA or Idaho , and other parts of the query can use those names to create edges between the vertices, using an arrow notation: (Idaho) -[:WITHIN]-> (USA) creates an edge labeled WITHIN , with Idaho as the tail node and USA as the head node.
+
+```cypher
+CREATE
+  (NAmerica:Location {name:'North America', type:'continent' }),
+  (USA:Location {name:'United States', type:'country' }),
+  (Idaho:Location {name:'Idaho', type:'state' }),
+  (Lucy:Person {name:'Lucy' }),
+
+  (Idaho) -[:WITHIN]-> (USA) -[:WITHIN]-> (NAmerica),
+  (Lucy) -[:BORN_IN]-> (Idaho)
+```
+
+And the following code shows how to query all the people born in USA that emigrated to Europe:
+
+```cypher
+MATCH
+  (person) -[:BORN_IN]-> () -[:WITHIN*0..]-> (us:Location {name:'United States'}),
+  (person) -[:LIVES_IN]-> () -[:WITHIN*0..]-> (eu:Location {name:'Europe'})
+RETURN person.name
+```
+
+The query can be read as follows:
+
+Find any vertex (call it person ) that meets both of the following conditions:
+
+1. person has an outgoing BORN_IN edge to some vertex. From that vertex, you can follow a chain of outgoing WITHIN edges until eventually you reach a vertex of type Location , whose name property is equal to "United States" .
+2. That same person vertex also has an outgoing LIVES_IN edge. Following that edge, and then a chain of outgoing WITHIN edges, you eventually reach a vertex of type Location , whose name property is equal to "Europe".
+   For each such person vertex, return the name property.
+
+## Graph Queries in SQL
+
+If we put graph data in a relational structure, we can also query it using SQL but with some difficulty. The following is an example of the same query written in SQL the _vertices_ and _edges_ tables:
+
+```sql
+WITH RECURSIVE
+  -- in_usa is the set of vertex IDs of all locations within the United States
+  in_usa(vertex_id) AS (
+    SELECT vertex_id
+    FROM vertices
+    WHERE properties->>'name' = 'United States'
+
+    UNION
+
+    SELECT edges.tail_vertex
+    FROM edges
+    JOIN in_usa ON edges.head_vertex = in_usa.vertex_id
+    WHERE edges.label = 'within'
+  ),
+
+  -- in_europe is the set of vertex IDs of all locations within Europe
+  in_europe(vertex_id) AS (
+    SELECT vertex_id
+    FROM vertices
+    WHERE properties->>'name' = 'Europe'
+
+    UNION
+
+    SELECT edges.tail_vertex
+    FROM edges
+    JOIN in_europe ON edges.head_vertex = in_europe.vertex_id
+    WHERE edges.label = 'within'
+  ),
+
+  -- born_in_usa is the set of vertex IDs of all people born in the US
+  born_in_usa(vertex_id) AS (
+    SELECT edges.tail_vertex
+    FROM edges
+    JOIN in_usa ON edges.head_vertex = in_usa.vertex_id
+    WHERE edges.label = 'born_in'
+  ),
+  -- lives_in_europe is the set of vertex IDs of all people living in Europe
+  lives_in_europe(vertex_id) AS (
+    SELECT edges.tail_vertex
+    FROM edges
+    JOIN in_europe ON edges.head_vertex = in_europe.vertex_id
+    WHERE edges.label = 'lives_in'
+  )
+
+
+SELECT vertices.properties->>'name'
+FROM vertices
+-- join to find those people who were both born in the US *and* live in Europe
+JOIN born_in_usa
+ON vertices.vertex_id = born_in_usa.vertex_id
+JOIN lives_in_europe ON vertices.vertex_id = lives_in_europe.vertex_id;
+```
+
+The same query can be written in 4 lines in one query language but requires 29 lines in another, that just shows that different data models are designed to satisfy different use cases. It’s important to pick a data model that is suitable for your application.
+
+## Triple-Stores and SPARQL
+
+In a triple-store, all information is stored in the form of very simple three-part statements: (_subject_, _predicate_, _object_). For example, in the triple (_Jim_, _likes_, _bananas_), _Jim_ is the subject, _likes_ is the predicate (verb), and _bananas_ is the object.
+
+The subject of a triple is equivalent to a vertex in a graph. The object is one of two things:
+
+1. A value in a primitive datatype, such as a string or a number. In that case, the predicate and object of the triple are equivalent to the key and value of a property on the subject vertex. For example, (_lucy_, _age_, _33_) is like a vertex lucy with properties `{"age":33}` .
+2. Another vertex in the graph. In that case, the predicate is an edge in the graph, the subject is the tail vertex, and the object is the head vertex. For example, in (_lucy_, _marriedTo_, _alain_) the subject and object _lucy_ and _alain_ are both vertices, and the predicate _marriedTo_ is the label of the edge that connects them.
+
+The following shows the Lucy and Alain's graph written in a format called _Turtle_, a subset of _Notation3_ (_N3_)
+
+```
+@prefix : <urn:example:>.
+_:lucy  a :Person.
+_:lucy  :name "Lucy".
+_:lucy  :bornIn _:idaho.
+
+_:idaho a :Location.
+_:idaho :name "Idaho".
+_:idaho :type "state".
+_:idaho :within _:usa.
+
+_:usa a :Location.
+_:usa :name "United States".
+_:usa :type "country".
+_:usa :within _:namerica.
+
+_:namerica a :Location.
+_:namerica :name "North America".
+_:namerica :type "continent".
+```
+
+Or in a more concise way:
+
+```
+_:lucy  a :Person;  :name "Lucy";  :bornIn _:idaho.
+_:idaho a :Location; :name "Idaho"; :type "state"; :within _:usa.
+_:usa a :Location; :name "United States"; :type "country"; :within _:namerica.
+_:namerica a :Location; :name "North America"; :type "continent".
+```
+
+`_:someName` represent the vertices while `:someName` represents the predicates, that can be properties like `:name "Lucy"` or edges like `:bornIn _:idaho`.
+
+### The semantic web
+
+The semantic web is fundamentally a simple and reasonable idea: websites already publish information as text and pictures for humans to read, so why don’t they also publish information as machine-readable data for computers to read? The _Resource Description Framework_ (_RDF_) was intended as a mechanism for different websites to publish data in a consistent format, allowing data from different websites to be automatically combined into a web of data — a kind of internet-wide “database of everything.”
+
+### The RDF data model
+
+The _Turtle_ language is a human-readable format for RDF data. A example of RDF/XML syntax follows for the same graph:
+
+```xml
+<Location rdf:nodeID="idaho">
+    <name>Idaho</name>
+    <type>state</type>
+    <within>
+        <Location rdf:nodeID="usa">
+            <name>United States</name>
+            <type>country</type>
+            <within>
+                <Location rdf:nodeID="namerica">
+                    <name>North America</name>
+                    <type>continent</type>
+                </Location>
+            </within>
+        </Location>
+    </within>
+</Location><Person rdf:nodeID="lucy">
+    <name>Lucy</name>
+    <bornIn rdf:nodeID="idaho" />
+</Person></rdf:RDF>
+```
+
+### The SPARQL query language
+
+SPARQL is a query language for triple-stores using the RDF data model. It predates Cypher, and since Cypher’s pattern matching is borrowed from SPARQL, they look quite similar. The same query as before — finding people who have moved from the US to Europe — is even more concise in SPARQL than it is in Cypher:
+
+```sparql
+PREFIX : <urn:example:>
+
+SELECT ?personName WHERE {
+  ?person :name ?personName.
+  ?person :bornIn / :within* / :name "United States".
+  ?person :livesIn / :within* / :name "Europe".
+}
+```
+
+SPARQL is a nice query language—even if the semantic web never happens, it can be a powerful tool for applications to use internally.
+
+## The Foundation: Datalog
+*Datalog* is a much older language than SPARQL or Cypher, having been studied extensively by academics in the 1980s. It is less well known among software engineers, but it is nevertheless important, because it provides the foundation that later query languages build upon. Datalog is a subset of Prolog, which you might have seen before if you've studied computer science.
+
+Datalog’s data model is similar to the triple-store model, generalized a bit. Instead of writing a triple as (subject, predicate, object), we write it as predicate(subject, object). The following example shows how to write the data from our example in Datalog.
+
+```prolog
+name(namerica, 'North America').
+type(namerica, continent).
+
+name(usa, 'United States').
+type(usa, country).
+within(usa, namerica).
+
+name(idaho, 'Idaho').
+type(idaho, state).
+within(idaho, usa).
+
+name(lucy, 'Lucy').
+born_in(lucy, idaho).
+```
+
+And the following shows the same query as before:
+
+```prolog
+within_recursive(Location, Name) :- name(Location, Name). /* Rule 1 */
+
+within_recursive(Location, Name) :- within(Location, Via), /* Rule 2 */
+                                    within_recursive(Via, Name).
+
+migrated(Name, BornIn, LivingIn) :- name(Person, Name), /* Rule 3 */
+                                    born_in(Person, BornLoc),
+                                    within_recursive(BornLoc, BornIn),
+                                    lives_in(Person, LivingLoc),
+                                    within_recursive(LivingLoc, LivingIn).
+
+?- migrated(Who, 'United States', 'Europe').
+/* Who = 'Lucy'. */
+```
+
+The following image shows how Datalog defines that Idaho is in North America applying the rule `within_recursive`:
+
+![](chapter-2-4.png)
+
+The Datalog approach requires a different kind of thinking to the other query languages discussed in this chapter, but it’s a very powerful approach, because rules can be combined and reused in different queries. It’s less convenient for simple one-off queries, but it can cope better if your data is complex.
