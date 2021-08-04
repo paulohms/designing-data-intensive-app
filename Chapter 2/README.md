@@ -434,7 +434,8 @@ SELECT ?personName WHERE {
 SPARQL is a nice query language—even if the semantic web never happens, it can be a powerful tool for applications to use internally.
 
 ## The Foundation: Datalog
-*Datalog* is a much older language than SPARQL or Cypher, having been studied extensively by academics in the 1980s. It is less well known among software engineers, but it is nevertheless important, because it provides the foundation that later query languages build upon. Datalog is a subset of Prolog, which you might have seen before if you've studied computer science.
+
+_Datalog_ is a much older language than SPARQL or Cypher, having been studied extensively by academics in the 1980s. It is less well known among software engineers, but it is nevertheless important, because it provides the foundation that later query languages build upon. Datalog is a subset of Prolog, which you might have seen before if you've studied computer science.
 
 Datalog’s data model is similar to the triple-store model, generalized a bit. Instead of writing a triple as (subject, predicate, object), we write it as predicate(subject, object). The following example shows how to write the data from our example in Datalog.
 
@@ -477,3 +478,23 @@ The following image shows how Datalog defines that Idaho is in North America app
 ![](chapter-2-4.png)
 
 The Datalog approach requires a different kind of thinking to the other query languages discussed in this chapter, but it’s a very powerful approach, because rules can be combined and reused in different queries. It’s less convenient for simple one-off queries, but it can cope better if your data is complex.
+
+## Summary
+
+Data models are a huge subject, and in this chapter we have taken a quick look at a broad variety of different models.
+
+Historically, data started out being represented as one big tree (the hierarchical model), but that wasn’t good for representing many-to-many relationships, so the relational model was invented to solve that problem. More recently, developers found that some applications don’t fit well in the relational model either. New nonrelational “NoSQL” datastores have diverged in two main directions:
+
+1. Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.
+2. Graph databases go in the opposite direction, targeting use cases where anything is potentially related to everything.
+
+All three models (document, relational, and graph) are widely used today, and each is good in its respective domain.
+
+One thing that document and graph databases have in common is that they typically don’t enforce a schema for the data they store, which can make it easier to adapt applications to changing requirements. However, your application most likely still assumes that data has a certain structure; it’s just a question of whether the schema is explicit (enforced on write) or implicit (handled on read).
+
+Although we have covered a lot of ground, there are still many data models left unmentioned. To give just a few brief examples:
+
+- Researchers working with genome data often need to perform sequence - similarity searches, which means taking one very long string (representing a DNA molecule) and matching it against a large database of strings that are similar, but not identical. None of the databases described here can handle this kind
+  of usage, which is why researchers have written specialized genome database software like GenBank.
+- Particle physicists have been doing Big Data–style large-scale data analysis for decades, and projects like the Large Hadron Collider (LHC) now work with hundreds of petabytes! At such a scale custom solutions are required to stop the hardware cost from spiraling out of control.
+- Full-text search is arguably a kind of data model that is frequently used alongside databases. Information retrieval is a large specialist subject that we won’t cover in great detail in this book, but we’ll touch on search indexes in Chapter 3 and Part III.
