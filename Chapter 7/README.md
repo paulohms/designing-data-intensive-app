@@ -1,4 +1,4 @@
-# Chapter 6 - Partitioning
+# Chapter 7 - Transactions
 
 In the harsh reality of data systems, many things can go wrong:
 - The database software or hardware may fail at any time (including in the middle of a write operation).
